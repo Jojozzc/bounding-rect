@@ -8,4 +8,4 @@
     div_method:  像素分类方法 div_method(img, x, y)
     *所有对应图像名称均一致，包括目标图像名称*
 
-	![avatar](https://github.com/Jojozzc/bounding-rect/blob/master/example-all.png)
+![example](https://github.com/Jojozzc/bounding-rect/blob/master/example-all.png)
