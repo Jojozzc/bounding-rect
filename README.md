@@ -7,3 +7,5 @@
     target_dir:  结果路径，结果图像的名称与原图像一致
     div_method:  像素分类方法 div_method(img, x, y)
     *所有对应图像名称均一致，包括目标图像名称*
+
+	![avatar](https://github.com/Jojozzc/bounding-rect/blob/master/example-all.png)
