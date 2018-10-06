@@ -24,6 +24,28 @@ def get_bounding_rectangle(img, div_method):
                 most_right = max(j, most_right)
     return [[most_up, most_left], [most_down, most_right]]
 
+def get_bounding_rectangle2(img, div_method, inc_rate=0.16):
+    """
+    :param img: 图片
+    :param div_method: 分割方法
+    :param inc_rate: 期望的扩充比例
+    在原有的基础上向外扩张
+    """
+    img = np.array(img)
+    [[most_up, most_left], [most_down, most_right]] = get_bounding_rectangle(img, div_method)
+    width = most_right - most_left
+    height = most_down - most_up
+    width_inc = width * inc_rate
+    height_inc = height * inc_rate
+    horizontal_half = width_inc / 2.0
+    vertical_half = height_inc / 2.0
+    most_left = max(0, most_left - int(horizontal_half))
+    most_right = min(img.shape[1] - 1, most_right + int(horizontal_half))
+    most_up = max(0, most_up - int(vertical_half))
+    most_down = min(img.shape[0] - 1, most_down + int(vertical_half))
+    return [[most_up, most_left], [most_down, most_right]]
+
+
 def img_segmentation(img_data, bounding_rect):
     print(img_data.shape)
     print(bounding_rect)
@@ -56,6 +78,6 @@ def batch_process(origin_img_dir, roi_img_dir, target_dir, div_method):
 def single_process(origin_img_path, roi_img_path, target_path, div_method):
     img_roi = imread(roi_img_path)
     img_org = imread(origin_img_path)
-    bounding_rect = get_bounding_rectangle(np.array(img_roi), div_method)
+    bounding_rect = get_bounding_rectangle2(np.array(img_roi), div_method, 0.1)
     seg_data = img_segmentation(np.array(img_org), bounding_rect)
     imsave(target_path, seg_data)

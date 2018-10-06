@@ -17,14 +17,15 @@ def div(img, x, y):
     img = np.array(img)
     return img[x][y][0] == 128
 
-# example1
-# boundingCore.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/good",
-#                            roi_img_dir="/media/jojo/Code/multi-task/samples/goodROI",
-#                            target_dir="/media/jojo/Code/multi-task/samples/goodBoundingRect",
-#                            div_method=divROI)
+if __name__ == '__main__':
+    # example1
+    boundingCore.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/bad",
+                               roi_img_dir="/media/jojo/Code/multi-task/samples/badROI",
+                               target_dir="/media/jojo/Code/multi-task/samples/bound2/badBoundingRect2",
+                               div_method=divROI)
 
 # example2
-boundingCore.batch_process(origin_img_dir="/media/jojo/Code/BUS/wavelet_test",
-                           roi_img_dir="/media/jojo/Code/BUS/GT_tumor_test",
-                           target_dir="/media/jojo/Code/BUS/target_test",
-                           div_method=div)
+# boundingCore.batch_process(origin_img_dir="/media/jojo/Code/BUS/wavelet_test",
+#                            roi_img_dir="/media/jojo/Code/BUS/GT_tumor_test",
+#                            target_dir="/media/jojo/Code/BUS/target_test",
+#                            div_method=div)
