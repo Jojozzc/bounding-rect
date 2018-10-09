@@ -19,9 +19,9 @@ def div(img, x, y):
 
 if __name__ == '__main__':
     # example1
-    boundingCore.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/bad",
-                               roi_img_dir="/media/jojo/Code/multi-task/samples/badROI",
-                               target_dir="/media/jojo/Code/multi-task/samples/bound2/badBoundingRect2",
+    boundingCore.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/good",
+                               roi_img_dir="/media/jojo/Code/multi-task/samples/goodROI",
+                               target_dir="/media/jojo/Code/multi-task/samples/bound2/goodBoundingRect2",
                                div_method=divROI)
 
 # example2

@@ -3,6 +3,63 @@ import os
 from scipy.misc import *
 import re
 
+def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
+    """
+
+    :param source_img: numpy array of source image
+    :param wh_rate: height / width
+    :param margin:Margin pixel
+    :param bound_rect: [[most_up, most_left], [most_down, most_right]]
+
+    :return target image numpy array
+    """
+    if hw_rate == 0:
+        return None
+    most_up = int(bound_rect[0][0])
+    most_left = int(bound_rect[0][1])
+    most_down = int(bound_rect[1][0])
+    most_right = int(bound_rect[1][1])
+
+    source_img = np.array(source_img)
+    bound_height = most_right - most_left
+    bound_width = most_down - most_up
+
+    bound_rate = bound_height / bound_width
+
+    result_height = bound_height
+    result_width = bound_width
+
+    if bound_rate == hw_rate:
+        return img_segmentation(source_img, bound_rect)
+    if bound_rate < hw_rate: # height is smaller
+        result_height = result_width * hw_rate
+    else:
+        result_width = result_height / hw_rate
+
+    result_np = np.zeros(shape=(result_height, result_width, 3))
+    source_x1 = max(0, most_up - (result_height - bound_height) / 2)
+    source_x2 = min(source_img.shape[0] - 1, most_down + (result_height - bound_height) / 2)
+    source_y1 = max(0, most_left - (result_width - bound_width) / 2)
+    source_y2 = min(source_img.shape[1] - 1, most_right + (result_width - bound_width) / 2)
+
+
+
+def abs2relatively(abs_x, abs_y, bias_x, bias_y):
+    """
+
+    :param abs_x: 绝对坐标x
+    :param abs_y: 绝对坐标y
+    :param bias_x: 相对参考系x方向的偏移
+    :param bias_y: 相对参考系y方向的偏移
+
+    :return 相对参考系中的坐标对(x_r, y_r)
+    """
+    x_r = abs_x + bias_x
+    y_r = abs_y + bias_y
+    return (x_r, y_r)
+
+
+
 # img:图像矩阵
 # divMethod: 分割依据
 # return : 外接矩阵左上角和右下角的坐标
