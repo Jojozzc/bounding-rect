@@ -162,6 +162,7 @@ def single_process(origin_img_path, roi_img_path, target_path, div_method):
     seg_data = img_segmentation(np.array(img_org), bounding_rect)
     imsave(target_path, seg_data)
 
+
 def test_for_img_seg_by_rate():
     source_img = imread('/media/jojo/Code/multi-task/samples/good/case16.bmp')
     roi = imread('/media/jojo/Code/multi-task/samples/goodROI/case16.bmp')
