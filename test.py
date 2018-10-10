@@ -3,7 +3,7 @@ from scipy.misc import *
 
 import os
 import numpy as np
-import boundingCore
+import bounding_core
 
 def divROI(img, x, y):
     img = np.array(img)
@@ -19,10 +19,10 @@ def div(img, x, y):
 
 if __name__ == '__main__':
     # example1
-    boundingCore.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/good",
-                               roi_img_dir="/media/jojo/Code/multi-task/samples/goodROI",
-                               target_dir="/media/jojo/Code/multi-task/samples/bound2/goodBoundingRect2",
-                               div_method=divROI)
+    bounding_core.batch_process(origin_img_dir="/media/jojo/Code/multi-task/samples/good",
+                                roi_img_dir="/media/jojo/Code/multi-task/samples/goodROI",
+                                target_dir="/media/jojo/Code/multi-task/samples/bound2/goodBoundingRect2",
+                                div_method=divROI)
 
 # example2
 # boundingCore.batch_process(origin_img_dir="/media/jojo/Code/BUS/wavelet_test",
