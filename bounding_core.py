@@ -21,20 +21,22 @@ def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
     most_right = int(bound_rect[1][1])
 
     source_img = np.array(source_img)
-    bound_height = most_right - most_left
-    bound_width = most_down - most_up
+    print('source image shape:{}X{}'.format(source_img.shape[0], source_img.shape[1]))
+    bound_height = most_down - most_up + 1
+    bound_width = most_right - most_left + 1
 
     bound_rate = bound_height / bound_width
-
+    print('bound rate:{}'.format(bound_rate))
     result_height = bound_height
     result_width = bound_width
 
     if bound_rate == hw_rate:
         return img_segmentation(source_img, bound_rect)
     if bound_rate < hw_rate: # height is smaller
-        result_height = result_width * hw_rate
+        result_height = int(result_width * hw_rate)
     else:
-        result_width = result_height / hw_rate
+        result_width = int(result_height / hw_rate)
+    print('result shape: {}X{}'.format(result_height, result_width))
 
     result_np = np.zeros(shape=(result_height, result_width, 3))
     source_x1 = max(0, most_up - (result_height - bound_height) / 2)
@@ -42,7 +44,28 @@ def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
     source_y1 = max(0, most_left - (result_width - bound_width) / 2)
     source_y2 = min(source_img.shape[1] - 1, most_right + (result_width - bound_width) / 2)
 
+    source_x1 = int(source_x1)
+    source_x2 = int(source_x2)
+    source_y1 = int(source_y1)
+    source_y2 = int(source_y2)
 
+    print('source_x:[{}, {}], source_y:[{}, {}]'.format(source_x1, source_x2, source_y1, source_y2))
+    # 以原图的(0, 0)为绝对原点
+    # bias 为偏移
+    bias_x = most_up - (result_height - bound_height) / 2
+    bias_y = most_left - (result_width - bound_width) / 2
+
+    result_abs_x1, result_abs_y1 = abs2relatively(source_x1, source_y1, bias_x, bias_y)
+    result_abs_x2, result_abs_y2 = abs2relatively(source_x2, source_y2, bias_x, bias_y)
+    print('result abs:[{},{}][{},{}]'.format(result_abs_x1, result_abs_y1, result_abs_x2, result_abs_y2))
+    for i in range(source_x1, source_x2):
+        for j in range(source_y1, source_y2):
+            x_r, y_r = abs2relatively(i, j, bias_x, bias_y)
+            if x_r >= 0 and y_r >= 0 and x_r < result_height and y_r < result_width:
+                result_np[x_r][y_r] = source_img[i][j]
+            else:
+                print('bad')
+    return result_np
 
 def abs2relatively(abs_x, abs_y, bias_x, bias_y):
     """
@@ -54,11 +77,9 @@ def abs2relatively(abs_x, abs_y, bias_x, bias_y):
 
     :return 相对参考系中的坐标对(x_r, y_r)
     """
-    x_r = abs_x + bias_x
-    y_r = abs_y + bias_y
-    return (x_r, y_r)
-
-
+    x_r = abs_x - bias_x
+    y_r = abs_y - bias_y
+    return (int(x_r), int(y_r))
 
 # img:图像矩阵
 # divMethod: 分割依据
@@ -112,8 +133,10 @@ def img_segmentation(img_data, bounding_rect):
     end_y = bounding_rect[1][1]
     rows = end_x - start_x + 1
     cols = end_y - start_y + 1
+
     result = np.zeros(shape=(rows, cols, 3))
     print("result shape:" + str(result.shape))
+
     for i in range(rows):
         for j in range(cols):
             result[i][j] = img_data[start_x + i][start_y + j]
@@ -138,3 +161,14 @@ def single_process(origin_img_path, roi_img_path, target_path, div_method):
     bounding_rect = get_bounding_rectangle2(np.array(img_roi), div_method, 0.1)
     seg_data = img_segmentation(np.array(img_org), bounding_rect)
     imsave(target_path, seg_data)
+
+def test_for_img_seg_by_rate():
+    source_img = imread('/media/jojo/Code/multi-task/samples/good/case16.bmp')
+    roi = imread('/media/jojo/Code/multi-task/samples/goodROI/case16.bmp')
+    rect = get_bounding_rectangle(roi, div_method=lambda img, x, y: img[x][y] != 0)
+    print(rect)
+    result = img_seg_by_rate(source_img, rect, 1)
+    imshow(result)
+
+if __name__ == '__main__':
+    test_for_img_seg_by_rate()
