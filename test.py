@@ -7,6 +7,7 @@ import bounding_core
 
 def divROI(img, x, y):
     img = np.array(img)
+    # 0 is black
     return img[x][y] != 0
 
 

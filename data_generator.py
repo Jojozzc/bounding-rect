@@ -5,9 +5,17 @@ from scipy.misc import *
 
 def batch_process_div_by_rate(source_dir, roi_dir_path, save_dir, img_file_format=['bmp', 'jpg', 'jpeg', 'png'],
                               div_method=lambda img, x, y: img[x][y] != 0):
+    '''
+
+    :param source_dir:
+    :param roi_dir_path:
+    :param save_dir:
+    :param img_file_format:
+    :param div_method:
+    '''
     if source_dir is None or not os.path.exists(source_dir):
         print('源目录不存在')
-        return None
+        return
     for file in os.listdir(source_dir):
         lower_name = file.lower()
         name_div = lower_name.split('.')
@@ -19,6 +27,13 @@ def batch_process_div_by_rate(source_dir, roi_dir_path, save_dir, img_file_forma
 
 
 def single_process_div_by_rate(source_img_path, roi_path, save_path, div_method):
+    """
+
+    :param source_img_path: 原图路径
+    :param roi_path: roi图路径
+    :param save_path: 保存结果图片的路径
+    :param div_method: 分割方法
+    """
     source_img = imread(source_img_path)
     roi_img = imread(roi_path)
     bound_rect = bounding_core.get_bounding_rectangle(roi_img,
