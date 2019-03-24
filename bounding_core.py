@@ -3,6 +3,28 @@ import os
 from scipy.misc import *
 import re
 
+def color_kinds(img):
+    color_set = set()
+    if np.ndim(img) == 2:
+        channel_num = 1
+    elif np.ndim(img) >= 3:
+        channel_num = np.size(img, np.ndim(img) - 1)
+    else:
+        print('unknow img format')
+        return color_set
+
+    print('img real channel:{}'.format(channel_num))
+    for i in range(np.shape(img)[0]):
+        for j in range(np.shape(img)[1]):
+            color_str = ''
+            if channel_num == 1:
+                color_str = str(img[i][j])
+            else:
+                for c in range(channel_num):
+                    color_str = color_str + ' ' + str(img[i][j][c])
+            color_set.add('({})'.format(color_str))
+    return color_set
+
 def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
     """
 
@@ -21,6 +43,13 @@ def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
     most_right = int(bound_rect[1][1])
 
     source_img = np.array(source_img)
+    shape = np.shape(source_img)
+    if np.ndim(source_img) == 2:
+        channel_num = 1
+    elif np.ndim(source_img) == 3:
+        channel_num = np.size(source_img, 2)
+    else:
+        raise Exception('unknow image channel, shape:{}, ndim:{}'.format(shape, np.ndim(shape)))
     print('source image shape:{}X{}'.format(source_img.shape[0], source_img.shape[1]))
     bound_height = most_down - most_up + 1
     bound_width = most_right - most_left + 1
@@ -37,8 +66,10 @@ def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
     else:
         result_width = int(result_height / hw_rate)
     print('result shape: {}X{}'.format(result_height, result_width))
-
-    result_np = np.zeros(shape=(result_height, result_width, 3))
+    if channel_num <= 1:
+        result_np = np.zeros(shape=(result_height, result_width))
+    else:
+        result_np = np.zeros(shape=(result_height, result_width, channel_num))
     source_x1 = max(0, most_up - (result_height - bound_height) / 2)
     source_x2 = min(source_img.shape[0] - 1, most_down + (result_height - bound_height) / 2)
     source_y1 = max(0, most_left - (result_width - bound_width) / 2)
@@ -62,7 +93,11 @@ def img_seg_by_rate(source_img, bound_rect, hw_rate=1):
         for j in range(source_y1, source_y2):
             x_r, y_r = abs2relatively(i, j, bias_x, bias_y)
             if x_r >= 0 and y_r >= 0 and x_r < result_height and y_r < result_width:
-                result_np[x_r][y_r] = source_img[i][j]
+                if channel_num <= 1:
+                    result_np[x_r][y_r] = source_img[i][j]
+                else:
+                    for c in range(channel_num):
+                        result_np[x_r][y_r][c] = source_img[i][j][c]
             else:
                 print('bad')
     return result_np
@@ -170,6 +205,7 @@ def test_for_img_seg_by_rate():
     print(rect)
     result = img_seg_by_rate(source_img, rect, 1)
     imshow(result)
+
 
 if __name__ == '__main__':
     test_for_img_seg_by_rate()
